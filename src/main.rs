@@ -88,13 +88,13 @@ fn main() {
     println!("Source: {source}");
     println!("Assets: {assets}");
 
-    if let Err(err) =fs::File::open(&source) {
+    if let Err(err) = fs::metadata(&source) {
         eprintln!("Source directory doesn't exists");
         eprintln!("{err}");
         return;
     }
 
-    if let Err(err) = fs::File::open(&assets) {
+    if let Err(err) = fs::metadata(&assets) {
         eprintln!("Assets directory doesn't exists");
         eprintln!("{err}");
         return;
