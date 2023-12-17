@@ -49,7 +49,7 @@ jobs:
         
     - name: Build CLI
       if: ${{ matrix.will_run }}
-      run: cargo build --package davinci-cleaner --verbose --release
+      run: cargo build --verbose --release
       
     - uses: actions/upload-artifact@v3
       if: ${{ matrix.will_run }}
