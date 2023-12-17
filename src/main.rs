@@ -85,13 +85,18 @@ fn main() {
     let source = join_paths(source, &cwd);
     let assets = join_paths(assets, &cwd);
 
-    if fs::File::open(&source).is_err() {
+    println!("Source: {source}");
+    println!("Assets: {assets}");
+
+    if let Err(err) =fs::File::open(&source) {
         eprintln!("Source directory doesn't exists");
+        eprintln!("{err}");
         return;
     }
 
-    if fs::File::open(&assets).is_err() {
+    if let Err(err) = fs::File::open(&assets) {
         eprintln!("Assets directory doesn't exists");
+        eprintln!("{err}");
         return;
     }
 
@@ -118,7 +123,7 @@ fn main() {
 
         if !matches!(
             file_path.extension().map(|s| s.to_str().unwrap()),
-            Some("html") | Some("js") | Some("css")
+            Some("html") | Some("js") | Some("css") | Some("xml")
         ) {
             continue;
         }
@@ -135,6 +140,8 @@ fn main() {
         );
 
         for img in sink.1 {
+            println!("[] \x1b[35m{img}\x1b[0m");
+
             let img = if let Some(url_prefix) = &url_prefix {
                 img.strip_prefix(url_prefix)
                     .unwrap_or(url_prefix)
@@ -143,12 +150,18 @@ fn main() {
                 img
             };
             let img = join_paths(&img[1..], &assets);
-            // println!("{img}");
             using_images.insert(img);
         }
     }
 
-    println!("\nUsed images: \x1b[33m{count}\x1b[0m", count = using_images.len());
+    for img in &using_images {
+        println!("[Used] \x1b[35m{img}\x1b[0m");
+    }
+
+    println!(
+        "\nUsed images: \x1b[33m{count}\x1b[0m",
+        count = using_images.len()
+    );
 
     for img in walkdir::WalkDir::new(assets)
         .into_iter()
