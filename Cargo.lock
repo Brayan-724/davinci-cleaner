@@ -29,6 +29,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
+name = "davinci-cleaner"
+version = "0.1.0"
+dependencies = [
+ "grep",
+ "termcolor",
+ "walkdir",
+]
+
+[[package]]
 name = "encoding_rs"
 version = "0.8.33"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -169,15 +178,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8f850157af41022bbb1b04ed15c011ce4d59520be82a4e3718b10c34b02cb85e"
 dependencies = [
  "libc",
-]
-
-[[package]]
-name = "no-paid-jaguar"
-version = "0.1.0"
-dependencies = [
- "grep",
- "termcolor",
- "walkdir",
 ]
 
 [[package]]
