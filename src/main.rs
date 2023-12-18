@@ -161,8 +161,14 @@ fn main() {
                 println!("[-] \x1b[35m{img}\x1b[0m");
             }
 
+            let img = if img.starts_with('/') {
+                &img[1..]
+            } else {
+                &img[..]
+            };
+
             let img = if let Some(url_prefix) = &url_prefix {
-                img.strip_prefix(url_prefix).unwrap_or(&img).to_string()
+                img.strip_prefix(url_prefix).unwrap_or(&img)
             } else {
                 img
             };
