@@ -9,6 +9,7 @@ use grep::{
     regex::RegexMatcher,
     searcher::{BinaryDetection, Searcher, SearcherBuilder, Sink, SinkError, SinkMatch},
 };
+use walkdir::WalkDir;
 
 struct CustomSink<'a>(pub &'a RegexMatcher, pub Vec<String>);
 
@@ -59,11 +60,17 @@ fn join_paths<T: AsRef<Path>, B: AsRef<Path>>(target: T, base: B) -> String {
     base.display().to_string()
 }
 
+struct Flags {
+    verbose: bool,
+    debug: bool,
+}
+
 fn help() {
     println!("Usage: davinci-cleaner <source> <assets> [url-prefix] [flags]");
     println!("");
     println!("Flags:");
-    println!("  v: Enable verbose mode. Show debug details");
+    println!("  v: Enable verbose mode.");
+    println!("  d: Enable debug mode.");
 }
 
 fn main() {
@@ -81,12 +88,25 @@ fn main() {
 
     let url_prefix = argv.next();
 
+    let flags = argv
+        .next()
+        .map(|flags| Flags {
+            verbose: flags.contains("v"),
+            debug: flags.contains("d"),
+        })
+        .unwrap_or(Flags {
+            verbose: false,
+            debug: false,
+        });
+
     let cwd = std::env::current_dir().expect("Needs current dir permissions");
     let source = join_paths(source, &cwd);
     let assets = join_paths(assets, &cwd);
 
-    println!("Source: {source}");
-    println!("Assets: {assets}");
+    if flags.debug {
+        println!("Source: {source}");
+        println!("Assets: {assets}");
+    }
 
     if let Err(err) = fs::metadata(&source) {
         eprintln!("Source directory doesn't exists");
@@ -111,10 +131,7 @@ fn main() {
 
     let mut using_images = HashSet::new();
 
-    for result in walkdir::WalkDir::new(source)
-        .into_iter()
-        .filter_map(Result::ok)
-    {
+    for result in WalkDir::new(source).into_iter().filter_map(Result::ok) {
         if !result.file_type().is_file() {
             continue;
         }
@@ -140,22 +157,36 @@ fn main() {
         );
 
         for img in sink.1 {
-            println!("[] \x1b[35m{img}\x1b[0m");
+            if flags.debug {
+                println!("[-] \x1b[35m{img}\x1b[0m");
+            }
 
             let img = if let Some(url_prefix) = &url_prefix {
-                img.strip_prefix(url_prefix)
-                    .unwrap_or(url_prefix)
-                    .to_string()
+                img.strip_prefix(url_prefix).unwrap_or(&img).to_string()
             } else {
                 img
             };
+
+            if flags.debug {
+                println!("[--] \x1b[35m{img}\x1b[0m");
+            }
+
             let img = join_paths(&img[1..], &assets);
+
+            if flags.debug {
+                let img = img.strip_prefix(&cwd.display().to_string()).unwrap_or(&img);
+                println!("[---] \x1b[35m{img}\x1b[0m");
+            }
             using_images.insert(img);
         }
     }
 
-    for img in &using_images {
-        println!("[Used] \x1b[35m{img}\x1b[0m");
+    if flags.verbose {
+        for img in &using_images {
+            let img = img.strip_prefix(&cwd.display().to_string()).unwrap_or(img);
+
+            println!("[Used] \x1b[35m{img}\x1b[0m");
+        }
     }
 
     println!(
@@ -163,19 +194,22 @@ fn main() {
         count = using_images.len()
     );
 
-    for img in walkdir::WalkDir::new(assets)
-        .into_iter()
-        .filter_map(Result::ok)
-    {
+    for img in WalkDir::new(assets).into_iter().filter_map(Result::ok) {
         if !img.file_type().is_file() {
             continue;
         }
 
-        let img = img.path().display().to_string();
+        let img_path = img.path();
+        let img = img_path.display().to_string();
 
         if using_images.contains(&img) {
             continue;
         }
+
+        let img = img_path
+            .strip_prefix(&cwd.display().to_string())
+            .unwrap_or(img_path)
+            .display();
 
         println!("[Unused] \x1b[32m{img}\x1b[0m");
     }
