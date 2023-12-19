@@ -39,27 +39,27 @@ macro_rules! colors {
     }
 
 colors! {
-     style_bold = "\x1B[1m";
-     style_underline = "\x1B[4m";
-     style_reset = "\x1B[0m";
+     s_bold = "\x1B[1m";
+     s_underline = "\x1B[4m";
+     s_reset = "\x1B[0m";
 
-     color_black = "\x1B[30m";
-     color_red = "\x1B[31m";
-     color_green = "\x1B[32m";
-     color_yellow = "\x1B[33m";
-     color_blue = "\x1B[34m";
-     color_magenta = "\x1B[35m";
-     color_cyan = "\x1B[36m";
-     color_white = "\x1B[37m";
-     color_bright_black = "\x1B[90m";
-     color_bright_red = "\x1B[91m";
-     color_bright_green = "\x1B[92m";
-     color_bright_yellow = "\x1B[93m";
-     color_bright_blue = "\x1B[94m";
-     color_bright_magenta = "\x1B[95m";
-     color_bright_cyan = "\x1B[96m";
-     color_bright_white = "\x1B[97m";
-     color_reset = "\x1B[39m";
+     c_black = "\x1B[30m";
+     c_red = "\x1B[31m";
+     c_green = "\x1B[32m";
+     c_yellow = "\x1B[33m";
+     c_blue = "\x1B[34m";
+     c_magenta = "\x1B[35m";
+     c_cyan = "\x1B[36m";
+     c_white = "\x1B[37m";
+     c_bright_black = "\x1B[90m";
+     c_bright_red = "\x1B[91m";
+     c_bright_green = "\x1B[92m";
+     c_bright_yellow = "\x1B[93m";
+     c_bright_blue = "\x1B[94m";
+     c_bright_magenta = "\x1B[95m";
+     c_bright_cyan = "\x1B[96m";
+     c_bright_white = "\x1B[97m";
+     c_reset = "\x1B[39m";
 
      bg_black = "\x1B[40m";
      bg_red = "\x1B[41m";
